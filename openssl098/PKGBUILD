@@ -19,10 +19,12 @@ conflicts=('openssl-compatibility')
 options=(!makeflags)
 source=("https://www.openssl.org/source/${_pkgbasename}-${_ver}.tar.gz"
         'no-rpath.patch'
-        'ca-dir.patch')
+        'ca-dir.patch'
+        'version-information.patch')
 md5sums=('cb41e94f762ed63e41d1cca2b8430ede'
          'dc78d3d06baffc16217519242ce92478'
-         '3bf51be3a1bbd262be46dc619f92aa90')
+         '3bf51be3a1bbd262be46dc619f92aa90'
+         'e9e9a0a05c467cd761175fc5b5c88dde')
 
 build() {
   cd "$srcdir/$_pkgbasename-$_ver"
@@ -31,9 +33,15 @@ build() {
   patch -p0 -i "$srcdir/no-rpath.patch"
   # set ca dir to /etc/ssl by default
   patch -p0 -i "$srcdir/ca-dir.patch"
+  # Add version information to avoid the following warning:
+  # "libssl.so.0.9.8: no version information available (required by X)"
+  rm -f openssl.ld engines/openssl.ld
+  patch -p1 -i "$srcdir/version-information.patch"
   # mark stack as non-executable: http://bugs.archlinux.org/task/12434
-  ./config --prefix=/usr --openssldir=/etc/ssl --libdir=lib \
-    shared zlib enable-md2 -Wa,--noexecstack
+  # Need to call ./Configure directly instead of ./config otherwise .so will
+  # be silent ignored.
+  ./Configure shared --prefix=/usr --openssldir=/etc/ssl -Wa,--noexecstack \
+      --libdir=lib no-idea no-mdc2 no-rc5 zlib enable-tlsext linux-$CARCH
 
   make
 }

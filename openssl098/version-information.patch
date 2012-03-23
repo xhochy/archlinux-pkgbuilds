@@ -1,0 +1,30 @@
+diff -ur --new-file a/Configure b/Configure
+--- a/Configure	2012-03-23 13:07:29.745530531 +0100
++++ b/Configure	2012-03-23 13:08:42.119640317 +0100
+@@ -1470,6 +1470,8 @@
+ 		}
+ 	}
+ 
++$shared_ldflag .= " -Wl,--version-script=openssl.ld";
++
+ open(IN,'<Makefile.org') || die "unable to read Makefile.org:$!\n";
+ unlink("$Makefile.new") || die "unable to remove old $Makefile.new:$!\n" if -e "$Makefile.new";
+ open(OUT,">$Makefile.new") || die "unable to create $Makefile.new:$!\n";
+diff -ur --new-file a/engines/openssl.ld b/engines/openssl.ld
+--- a/engines/openssl.ld	1970-01-01 01:00:00.000000000 +0100
++++ b/engines/openssl.ld	2012-03-23 13:10:32.834161436 +0100
+@@ -0,0 +1,5 @@
++OPENSSL_0.9.8 {
++	 global:
++		 *;
++};
++
+diff -ur --new-file a/openssl.ld b/openssl.ld
+--- a/openssl.ld	1970-01-01 01:00:00.000000000 +0100
++++ b/openssl.ld	2012-03-23 13:11:00.301122776 +0100
+@@ -0,0 +1,5 @@
++OPENSSL_0.9.8 {
++	 global:
++		 *;
++};
++
