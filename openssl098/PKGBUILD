@@ -26,6 +26,12 @@ md5sums=('cb41e94f762ed63e41d1cca2b8430ede'
          '3bf51be3a1bbd262be46dc619f92aa90'
          'e9e9a0a05c467cd761175fc5b5c88dde')
 
+if [ "${CARCH}" = "x86_64" ]; then
+  _carch=x86_64
+elif [ "${CARCH}" = "i686" ]; then
+  _carch=generic32
+fi
+
 build() {
   cd "$srcdir/$_pkgbasename-$_ver"
 
@@ -41,7 +47,7 @@ build() {
   # Need to call ./Configure directly instead of ./config otherwise .so will
   # be silent ignored.
   ./Configure shared --prefix=/usr --openssldir=/etc/ssl -Wa,--noexecstack \
-      --libdir=lib no-idea no-mdc2 no-rc5 zlib enable-tlsext linux-$CARCH
+      --libdir=lib no-idea no-mdc2 no-rc5 zlib enable-tlsext linux-$_carch
 
   make
 }
